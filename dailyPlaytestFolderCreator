@@ -1,0 +1,74 @@
+import os
+import datetime
+import platform
+import subprocess
+
+def create_folder_structure():
+    # Base directory where folders will be created (mock data).
+    base_directory = r"C:\Users\User\Desktop\ProjectFolder\History"
+
+    # Get the current date
+    current_date = datetime.datetime.now()
+    month_name = current_date.strftime('%B')  # Month as a word (e.g., January, February)
+    month_number = current_date.strftime('%m')  # Month as a number (e.g., 01, 02)
+    day = current_date.strftime('%d')  # Day of the month
+    year = current_date.strftime('%Y')  # Full year
+    day_month_year = f"{day} - {month_number} - {year}"  # Format: Day - Month(Number) - Year
+
+    # Folder paths
+    month_directory = os.path.join(base_directory, month_name)  # Month folder as a word
+    date_directory = os.path.join(month_directory, day_month_year)  # Specific date folder
+
+    try:
+        # Create base directory if it doesn't exist
+        if not os.path.exists(base_directory):
+            os.mkdir(base_directory)
+
+        # Create the month folder (e.g., "January")
+        if not os.path.exists(month_directory):
+            os.mkdir(month_directory)
+
+        # Create the date folder (e.g., "01 - 01 - 2023")
+        if not os.path.exists(date_directory):
+            os.mkdir(date_directory)
+
+        # Create session and match folders within the date folder
+        for session in range(1, 4):  # Sessions 1, 2, 3
+            session_path = os.path.join(date_directory, f"Session {session} -")
+            if not os.path.exists(session_path):
+                os.mkdir(session_path)
+
+            for match in range(1, 4):  # Matches 1, 2, 3
+                match_path = os.path.join(session_path, f"Match {match} -")
+                if not os.path.exists(match_path):
+                    os.mkdir(match_path)
+
+        print(f"Folders successfully created at: {date_directory}")
+
+        # Open the date folder after creation
+        open_folder(date_directory)
+
+    except Exception as e:
+        print(f"An error occurred while creating the folders: {e}")
+
+
+def open_folder(path):
+    """
+    Opens the specified folder in the file manager based on the operating system.
+    """
+    try:
+        system_os = platform.system()
+        if system_os == "Windows":
+            subprocess.Popen(f'explorer "{path}"')
+        elif system_os == "Darwin":  # macOS
+            subprocess.Popen(["open", path])
+        elif system_os == "Linux":
+            subprocess.Popen(["xdg-open", path])
+        else:
+            print("Unsupported operating system.")
+    except Exception as e:
+        print(f"Could not open the folder: {e}")
+
+
+# Run the function
+create_folder_structure()
